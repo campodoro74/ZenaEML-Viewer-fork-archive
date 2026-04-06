@@ -1,0 +1,12 @@
+.build/
+.swiftpm/
+dist/
+DerivedData/
+*.xcodeproj/
+*.xcworkspace/
+.DS_Store
+Package.resolved
+
+# Local test fixtures (real correspondence; not for repo)
+test.eml
+*.eml
