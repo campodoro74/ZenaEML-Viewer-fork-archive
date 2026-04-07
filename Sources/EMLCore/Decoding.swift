@@ -46,10 +46,10 @@ public enum Decoding {
     public static func base64(_ s: String) -> Data {
         let cleaned = s.unicodeScalars.filter { scalar in
             let c = scalar.value
-            return (c >= 0x30 && c <= 0x39) ||
-                   (c >= 0x41 && c <= 0x5A) ||
-                   (c >= 0x61 && c <= 0x7A) ||
-                   c == 0x2B || c == 0x2F || c == 0x3D
+            return (c >= 0x30 && c <= 0x39) || // 0-9
+                   (c >= 0x41 && c <= 0x5A) || // A-Z
+                   (c >= 0x61 && c <= 0x7A) || // a-z
+                   c == 0x2B || c == 0x2F || c == 0x3D // + / =
         }
         let str = String(String.UnicodeScalarView(cleaned))
         return Data(base64Encoded: str, options: .ignoreUnknownCharacters) ?? Data()
@@ -88,5 +88,47 @@ public enum Decoding {
             return String.Encoding(rawValue: ns)
         }
         return nil
+    }
+
+    // MARK: - RFC 2047 encoded-word
+
+    public static func decodeEncodedWords(_ s: String) -> String {
+        let pattern = #"=\?([^?\s]+)\?([BbQq])\?([^?\s]*)\?="#
+        guard let re = try? NSRegularExpression(pattern: pattern) else { return s }
+        let ns = s as NSString
+        let matches = re.matches(in: s, range: NSRange(location: 0, length: ns.length))
+        if matches.isEmpty { return s }
+
+        var result = ""
+        var cursor = 0
+        var prevWasEncoded = false
+
+        for m in matches {
+            let r = m.range
+            let between = ns.substring(with: NSRange(location: cursor, length: r.location - cursor))
+            let onlyWhitespace = between.allSatisfy { $0.isWhitespace }
+            if !(prevWasEncoded && onlyWhitespace) {
+                result += between
+            }
+
+            let charset = ns.substring(with: m.range(at: 1))
+            let enc = ns.substring(with: m.range(at: 2)).uppercased()
+            let text = ns.substring(with: m.range(at: 3))
+
+            let decoded: String
+            if enc == "B" {
+                decoded = string(from: base64(text), charset: charset)
+            } else {
+                let qp = text.replacingOccurrences(of: "_", with: " ")
+                let bytes = qp.data(using: .ascii) ?? Data(qp.utf8)
+                decoded = string(from: quotedPrintable(bytes), charset: charset)
+            }
+            result += decoded
+            cursor = r.location + r.length
+            prevWasEncoded = true
+        }
+
+        result += ns.substring(from: cursor)
+        return result
     }
 }
