@@ -1,0 +1,116 @@
+import Foundation
+
+public struct Message {
+    public let root: Part
+
+    public init(data: Data) {
+        self.root = MIME.parse(data)
+    }
+
+    public init(url: URL) throws {
+        let data = try Data(contentsOf: url)
+        self.init(data: data)
+    }
+
+    // MARK: - Header accessors (RFC 2047-декодированные)
+
+    public var headers: [(String, String)] { root.rawHeaders }
+
+    public var from: String    { decodedHeader("From") }
+    public var to: String      { decodedHeader("To") }
+    public var cc: String      { decodedHeader("Cc") }
+    public var bcc: String     { decodedHeader("Bcc") }
+    public var subject: String { decodedHeader("Subject") }
+    public var date: String    { decodedHeader("Date") }
+    public var replyTo: String { decodedHeader("Reply-To") }
+
+    public func decodedHeader(_ name: String) -> String {
+        guard let raw = root.header(name) else { return "" }
+        return Decoding.decodeEncodedWords(raw)
+    }
+
+    // MARK: - Bodies
+
+    public var htmlBody: String? {
+        guard let part = findBodyPart(contentType: "text/html") else { return nil }
+        return part.decodedText()
+    }
+
+    public var plainBody: String? {
+        guard let part = findBodyPart(contentType: "text/plain") else { return nil }
+        return part.decodedText()
+    }
+
+    public func findBodyPart(contentType: String) -> Part? {
+        findBody(root, contentType: contentType)
+    }
+
+    private func findBody(_ part: Part, contentType: String) -> Part? {
+        if !part.isMultipart,
+           part.contentType == contentType,
+           part.disposition?.lowercased() != "attachment" {
+            return part
+        }
+        for sub in part.parts {
+            if let f = findBody(sub, contentType: contentType) { return f }
+        }
+        return nil
+    }
+
+    // MARK: - Attachments / inlines
+
+    public var attachments: [Part] {
+        var out: [Part] = []
+        collectAttachments(root, into: &out)
+        return out
+    }
+
+    public var inlineParts: [Part] {
+        var out: [Part] = []
+        collectInlines(root, into: &out)
+        return out
+    }
+
+    private func collectAttachments(_ part: Part, into: inout [Part]) {
+        if !part.isMultipart {
+            let disp = part.disposition?.lowercased()
+            let isExplicitAttachment = disp == "attachment"
+            let isBodyText = (part.contentType == "text/plain" || part.contentType == "text/html") &&
+                             disp != "attachment"
+            let hasName = part.filename != nil
+            if isExplicitAttachment || (!isBodyText && hasName && disp != "inline") {
+                into.append(part)
+            }
+        }
+        for sub in part.parts { collectAttachments(sub, into: &into) }
+    }
+
+    private func collectInlines(_ part: Part, into: inout [Part]) {
+        if !part.isMultipart, part.contentID != nil {
+            let disp = part.disposition?.lowercased()
+            let isTextBody = part.contentType == "text/plain" || part.contentType == "text/html"
+            if disp == "inline" || (!isTextBody && disp != "attachment") {
+                into.append(part)
+            }
+        }
+        for sub in part.parts { collectInlines(sub, into: &into) }
+    }
+
+    // MARK: - CID resolution
+
+    public func partByContentID(_ cid: String) -> Part? {
+        let clean = cid.trimmingCharacters(in: CharacterSet(charactersIn: "<> \t\r\n"))
+        var found: Part? = nil
+        walk(root) { p in
+            if found == nil, let id = p.contentID, id == clean {
+                found = p
+            }
+        }
+        return found
+    }
+
+    private func walk(_ part: Part, _ visit: (Part) -> Void) {
+        visit(part)
+        for sub in part.parts { walk(sub, visit) }
+    }
+}
