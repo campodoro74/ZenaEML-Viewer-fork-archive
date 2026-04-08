@@ -6,8 +6,10 @@ let package = Package(
     platforms: [.macOS(.v13)],
     products: [
         .library(name: "EMLCore", targets: ["EMLCore"]),
+        .executable(name: "emlcheck", targets: ["emlcheck"]),
     ],
     targets: [
         .target(name: "EMLCore"),
+        .executableTarget(name: "emlcheck", dependencies: ["EMLCore"]),
     ]
 )
