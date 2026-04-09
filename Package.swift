@@ -7,9 +7,19 @@ let package = Package(
     products: [
         .library(name: "EMLCore", targets: ["EMLCore"]),
         .executable(name: "emlcheck", targets: ["emlcheck"]),
+        .executable(name: "EMLViewer", targets: ["EMLViewer"]),
     ],
     targets: [
         .target(name: "EMLCore"),
         .executableTarget(name: "emlcheck", dependencies: ["EMLCore"]),
+        .executableTarget(
+            name: "EMLViewer",
+            dependencies: ["EMLCore"],
+            linkerSettings: [
+                .linkedFramework("AppKit"),
+                .linkedFramework("WebKit"),
+                .linkedFramework("SwiftUI"),
+            ]
+        ),
     ]
 )
