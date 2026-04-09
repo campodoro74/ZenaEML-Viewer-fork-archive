@@ -84,18 +84,22 @@ struct HeaderPanel: View {
 struct BodyView: View {
     let message: Message
     var body: some View {
-        if let plain = message.plainBody {
-            ScrollView {
-                Text(plain)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(14)
-                    .font(.system(.body, design: .monospaced))
+        Group {
+            if let html = message.htmlBody {
+                WebView(html: html, message: message)
+            } else if let plain = message.plainBody {
+                ScrollView {
+                    Text(plain)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(14)
+                        .font(.system(.body, design: .monospaced))
+                }
+            } else {
+                Text("(no body)")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-        } else {
-            Text("(no body)")
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
