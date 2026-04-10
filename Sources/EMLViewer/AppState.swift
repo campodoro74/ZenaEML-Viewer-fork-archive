@@ -11,8 +11,11 @@ final class AppState: ObservableObject {
     @Published var message: Message?
     @Published var sourceURL: URL?
     @Published var errorText: String?
+    @Published var toast: String?
 
     private init() {}
+
+    // MARK: - Loading
 
     func open(_ url: URL) {
         do {
@@ -39,12 +42,85 @@ final class AppState: ObservableObject {
         }
     }
 
-    func saveAttachment(_ part: Part) {
+    // MARK: - Attachment actions
+
+    /// Сохраняет тело части во временный файл и открывает его в ассоциированном приложении.
+    func openAttachment(_ part: Part) {
+        guard let url = writeToTemp(part) else {
+            NSSound.beep(); return
+        }
+        NSWorkspace.shared.open(url)
+    }
+
+    /// Save As… через стандартный NSSavePanel.
+    func saveAsAttachment(_ part: Part) {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = part.filename ?? "attachment"
         if panel.runModal() == .OK, let url = panel.url {
-            do { try part.decodedBody().write(to: url) }
-            catch { NSSound.beep() }
+            try? part.decodedBody().write(to: url)
         }
+    }
+
+    /// Сохраняет все вложения сразу в ~/Downloads, разрешая коллизии имён.
+    func downloadAll(_ attachments: [Part]) {
+        guard !attachments.isEmpty else { return }
+        let dir = downloadsDirectory()
+        var saved: [URL] = []
+
+        for part in attachments {
+            let base = part.filename ?? "attachment"
+            let target = uniqueURL(in: dir, filename: base)
+            do {
+                try part.decodedBody().write(to: target, options: .atomic)
+                saved.append(target)
+            } catch {
+                continue
+            }
+        }
+
+        if !saved.isEmpty {
+            NSWorkspace.shared.activateFileViewerSelecting(saved)
+            let n = saved.count
+            toast = "Saved \(n) file\(n == 1 ? "" : "s") to Downloads"
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func writeToTemp(_ part: Part) -> URL? {
+        let base = part.filename ?? "attachment.bin"
+        let tmpDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("EMLViewer", isDirectory: true)
+        try? FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
+        let url = uniqueURL(in: tmpDir, filename: base)
+        do {
+            try part.decodedBody().write(to: url, options: .atomic)
+            return url
+        } catch {
+            return nil
+        }
+    }
+
+    private func downloadsDirectory() -> URL {
+        if let url = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first {
+            return url
+        }
+        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads")
+    }
+
+    private func uniqueURL(in dir: URL, filename: String) -> URL {
+        var candidate = dir.appendingPathComponent(filename)
+        guard FileManager.default.fileExists(atPath: candidate.path) else { return candidate }
+
+        let ns = filename as NSString
+        let name = ns.deletingPathExtension
+        let ext = ns.pathExtension
+        var i = 2
+        while FileManager.default.fileExists(atPath: candidate.path) {
+            let suffix = ext.isEmpty ? " (\(i))" : " (\(i)).\(ext)"
+            candidate = dir.appendingPathComponent(name + suffix)
+            i += 1
+        }
+        return candidate
     }
 }
