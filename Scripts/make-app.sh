@@ -22,6 +22,12 @@ cp "$BUILD_DIR/$APP_NAME" "$APP_BUNDLE/Contents/MacOS/$APP_NAME"
 cp "Resources/Info.plist" "$APP_BUNDLE/Contents/Info.plist"
 printf "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
+# Копируем SwiftPM resource bundle в Contents/Resources, чтобы Bundle.module работал
+for bundle in "$BUILD_DIR"/*_*.bundle; do
+    [ -e "$bundle" ] || continue
+    cp -R "$bundle" "$APP_BUNDLE/Contents/Resources/"
+done
+
 echo "==> Ad-hoc signing"
 codesign --force --deep --sign - \
     --entitlements "Resources/EMLViewer.entitlements" \

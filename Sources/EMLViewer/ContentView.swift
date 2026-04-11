@@ -11,7 +11,7 @@ struct ContentView: View {
             if let msg = state.message {
                 MessageView(message: msg)
             } else {
-                DropZone()
+                WelcomeView()
             }
             ToastOverlay()
         }
@@ -28,34 +28,6 @@ struct ContentView: View {
             Task { @MainActor in state.open(url) }
         }
         return true
-    }
-}
-
-
-// MARK: - Drop zone
-
-struct DropZone: View {
-    @EnvironmentObject var state: AppState
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "envelope.open")
-                .font(.system(size: 64, weight: .ultraLight))
-                .foregroundStyle(.tertiary)
-            Text("Drop a .eml file here")
-                .font(.title3.weight(.regular))
-                .foregroundStyle(.secondary)
-            Button("Open…") { state.openPanel() }
-                .controlSize(.large)
-                .keyboardShortcut("o")
-            if let err = state.errorText {
-                Text(err)
-                    .font(.callout)
-                    .foregroundStyle(.red)
-                    .padding(.top, 8)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

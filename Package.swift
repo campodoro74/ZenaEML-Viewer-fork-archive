@@ -15,6 +15,9 @@ let package = Package(
         .executableTarget(
             name: "EMLViewer",
             dependencies: ["EMLCore"],
+            resources: [
+                .process("Resources"),
+            ],
             linkerSettings: [
                 .linkedFramework("AppKit"),
                 .linkedFramework("WebKit"),

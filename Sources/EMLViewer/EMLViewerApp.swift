@@ -15,6 +15,7 @@ struct EMLViewerApp: App {
                     openFromCommandLine()
                 }
         }
+        .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unifiedCompact)
         .commands {
             CommandGroup(replacing: .newItem) {
