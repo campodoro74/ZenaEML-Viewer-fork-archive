@@ -8,6 +8,10 @@
     <string>EMLViewer</string>
     <key>CFBundleExecutable</key>
     <string>EMLViewer</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleIconName</key>
+    <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
     <string>com.noma4i.EMLViewer</string>
     <key>CFBundleName</key>
@@ -30,6 +34,7 @@
     <true/>
     <key>NSSupportsSuddenTermination</key>
     <true/>
+
     <key>CFBundleDocumentTypes</key>
     <array>
         <dict>
@@ -52,6 +57,7 @@
             </array>
         </dict>
     </array>
+
     <key>UTImportedTypeDeclarations</key>
     <array>
         <dict>

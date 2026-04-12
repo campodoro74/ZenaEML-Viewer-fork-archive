@@ -3,12 +3,15 @@ BUNDLE       := dist/$(APP).app
 INSTALL_PATH := /Applications/$(APP).app
 LSREG        := /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 
-.PHONY: all build bundle install uninstall clean
+.PHONY: all build bundle install uninstall clean icon
 
 all: bundle
 
 build:
 	swift build -c release
+
+icon:
+	bash Scripts/make-icon.sh
 
 bundle:
 	bash Scripts/make-app.sh release
