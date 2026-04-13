@@ -11,6 +11,14 @@ let package = Package(
     ],
     targets: [
         .target(name: "EMLCore"),
+        .testTarget(
+            name: "EMLCoreTests",
+            dependencies: ["EMLCore"],
+            path: "Tests/EMLCoreTests",
+            resources: [
+                .copy("Fixtures"),
+            ]
+        ),
         .executableTarget(name: "emlcheck", dependencies: ["EMLCore"]),
         .executableTarget(
             name: "EMLViewer",
