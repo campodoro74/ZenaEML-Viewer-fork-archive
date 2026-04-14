@@ -1,0 +1,2 @@
+# Preserve CRLF line endings inside EML fixtures (RFC 822 is CRLF).
+Tests/EMLCoreTests/Fixtures/*.eml binary
