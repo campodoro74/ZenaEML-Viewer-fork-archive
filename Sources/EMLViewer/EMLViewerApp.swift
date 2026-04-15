@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import AppKit
 
 @main
@@ -6,15 +7,22 @@ struct EMLViewerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var state = AppState.shared
 
+    private let modelContainer: ModelContainer = {
+        let schema = Schema([AppPreferences.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        return try! ModelContainer(for: schema, configurations: [config])
+    }()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(state)
-                .frame(minWidth: 720, minHeight: 520)
+                .frame(minWidth: 520, minHeight: 380)
                 .task {
                     openFromCommandLine()
                 }
         }
+        .modelContainer(modelContainer)
         .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unifiedCompact)
         .commands {

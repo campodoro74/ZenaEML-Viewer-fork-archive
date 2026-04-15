@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "EMLViewer",
-    platforms: [.macOS(.v13)],
+    platforms: [.macOS(.v14)],
     products: [
         .library(name: "EMLCore", targets: ["EMLCore"]),
         .executable(name: "emlcheck", targets: ["emlcheck"]),

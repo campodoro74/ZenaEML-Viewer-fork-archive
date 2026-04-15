@@ -1,10 +1,16 @@
 import SwiftUI
+import SwiftData
 import AppKit
 import UniformTypeIdentifiers
 import EMLCore
 
 struct ContentView: View {
     @EnvironmentObject var state: AppState
+    @Environment(\.modelContext) private var modelContext
+    @Query private var prefsList: [AppPreferences]
+    @StateObject private var tracker = WindowTracker()
+
+    private var prefs: AppPreferences? { prefsList.first }
 
     var body: some View {
         ZStack {
@@ -16,10 +22,30 @@ struct ContentView: View {
             ToastOverlay()
         }
         .background(Color(nsColor: .textBackgroundColor))
+        .background(WindowAccessor { window in
+            bindWindow(window)
+        })
+        .task {
+            ensurePrefsExist()
+            applyAppearance(prefs?.appearance ?? .system)
+        }
+        .onChange(of: prefs?.appearanceRaw) { _, _ in
+            applyAppearance(prefs?.appearance ?? .system)
+        }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             handleDrop(providers)
         }
     }
+
+    private func applyAppearance(_ mode: AppearanceMode) {
+        switch mode {
+        case .system: NSApp.appearance = nil
+        case .light:  NSApp.appearance = NSAppearance(named: .aqua)
+        case .dark:   NSApp.appearance = NSAppearance(named: .darkAqua)
+        }
+    }
+
+    // MARK: - Drop
 
     private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else { return false }
@@ -28,6 +54,85 @@ struct ContentView: View {
             Task { @MainActor in state.open(url) }
         }
         return true
+    }
+
+    // MARK: - Preferences
+
+    private func ensurePrefsExist() {
+        if prefsList.isEmpty {
+            modelContext.insert(AppPreferences())
+            try? modelContext.save()
+        }
+    }
+
+    private func bindWindow(_ window: NSWindow) {
+        if let p = prefs {
+            var frame = window.frame
+            frame.size = NSSize(width: p.windowWidth, height: p.windowHeight)
+            window.setFrame(frame, display: true, animate: false)
+        }
+        tracker.onResize = { newFrame in
+            let p: AppPreferences
+            if let existing = prefsList.first {
+                p = existing
+            } else {
+                p = AppPreferences()
+                modelContext.insert(p)
+            }
+            p.windowWidth = newFrame.width
+            p.windowHeight = newFrame.height
+            try? modelContext.save()
+        }
+        tracker.attach(window)
+    }
+}
+
+// MARK: - Window tracking
+
+@MainActor
+final class WindowTracker: ObservableObject {
+    weak var window: NSWindow?
+    var onResize: (NSRect) -> Void = { _ in }
+    private var observer: NSObjectProtocol?
+
+    func attach(_ window: NSWindow) {
+        guard self.window !== window else { return }
+        self.window = window
+        if let existing = observer {
+            NotificationCenter.default.removeObserver(existing)
+        }
+        observer = NotificationCenter.default.addObserver(
+            forName: NSWindow.didResizeNotification,
+            object: window,
+            queue: .main
+        ) { [weak self] note in
+            guard let window = note.object as? NSWindow else { return }
+            self?.onResize(window.frame)
+        }
+    }
+
+    deinit {
+        if let observer = observer {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+}
+
+struct WindowAccessor: NSViewRepresentable {
+    let onWindow: (NSWindow) -> Void
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        DispatchQueue.main.async {
+            if let w = view.window { onWindow(w) }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            if let w = nsView.window { onWindow(w) }
+        }
     }
 }
 
@@ -149,22 +254,21 @@ struct AttachmentsBar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
                 Text("\(attachments.count) attachment\(attachments.count == 1 ? "" : "s")")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.secondary)
                 Spacer()
                 Button {
                     state.downloadAll(attachments)
                 } label: {
                     Label("Download All", systemImage: "arrow.down.circle")
-                        .font(.system(size: 12, weight: .medium))
                 }
                 .buttonStyle(.borderless)
                 .help("Save all attachments to Downloads")
             }
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(.secondary)
             .padding(.horizontal, 14)
-            .padding(.top, 8)
+            .padding(.top, 10)
             .padding(.bottom, 2)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -174,7 +278,7 @@ struct AttachmentsBar: View {
                     }
                 }
                 .padding(.horizontal, 14)
-                .padding(.top, 4)
+                .padding(.top, 6)
                 .padding(.bottom, 12)
             }
         }
@@ -253,12 +357,15 @@ struct FileIcon: NSViewRepresentable {
     private func icon() -> NSImage {
         let ws = NSWorkspace.shared
         if let name = part.filename {
-            let ext = (name as NSString).pathExtension.lowercased()
-            if !ext.isEmpty, let type = UTType(filenameExtension: ext) {
-                return ws.icon(for: type)
+            let ext = (name as NSString).pathExtension
+            if !ext.isEmpty {
+                return ws.icon(forFileType: ext)
             }
         }
         if let type = UTType(mimeType: part.contentType) {
+            if let tag = type.preferredFilenameExtension {
+                return ws.icon(forFileType: tag)
+            }
             return ws.icon(for: type)
         }
         return ws.icon(for: .data)

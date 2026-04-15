@@ -1,9 +1,13 @@
 import SwiftUI
+import SwiftData
 import AppKit
 import UniformTypeIdentifiers
 
 struct WelcomeView: View {
     @EnvironmentObject var state: AppState
+    @Environment(\.modelContext) private var modelContext
+    @Query private var prefsList: [AppPreferences]
+
     @State private var isDefault: Bool = false
     @State private var assocStatus: String? = nil
     @State private var working: Bool = false
@@ -31,12 +35,12 @@ struct WelcomeView: View {
 
             Divider().padding(.horizontal, 60).padding(.vertical, 4)
 
-            VStack(spacing: 10) {
+            VStack(spacing: 12) {
                 Button {
                     state.openPanel()
                 } label: {
                     Label("Open .eml file…", systemImage: "folder")
-                        .frame(width: 220)
+                        .frame(width: 240)
                 }
                 .controlSize(.large)
                 .keyboardShortcut("o")
@@ -49,6 +53,8 @@ struct WelcomeView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+
+                appearanceRow
             }
 
             if let err = state.errorText {
@@ -68,7 +74,7 @@ struct WelcomeView: View {
         .onAppear(perform: refreshAssociation)
     }
 
-    // MARK: - Association row
+    // MARK: - Rows
 
     private var associationRow: some View {
         HStack(spacing: 8) {
@@ -81,7 +87,7 @@ struct WelcomeView: View {
                     setAsDefault()
                 } label: {
                     Label("Set as default for .eml", systemImage: "paperclip.badge.ellipsis")
-                        .frame(width: 220)
+                        .frame(width: 240)
                 }
                 .controlSize(.regular)
                 .disabled(working)
@@ -89,7 +95,21 @@ struct WelcomeView: View {
         }
     }
 
-    // MARK: - Footer
+    private var appearanceRow: some View {
+        HStack(spacing: 10) {
+            Text("Appearance")
+                .font(.system(size: 12))
+                .foregroundStyle(.secondary)
+            Picker("", selection: appearanceBinding) {
+                ForEach(AppearanceMode.allCases) { mode in
+                    Text(mode.label).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(width: 240)
+        }
+    }
 
     private var footer: some View {
         HStack(spacing: 12) {
@@ -118,7 +138,7 @@ struct WelcomeView: View {
 
     @ViewBuilder
     private var githubIconView: some View {
-        if let url = Bundle.module.url(forResource: "github", withExtension: "png"),
+        if let url = resourceBundle.url(forResource: "github", withExtension: "png"),
            let image = NSImage(contentsOf: url) {
             Image(nsImage: image)
                 .resizable()
@@ -129,7 +149,15 @@ struct WelcomeView: View {
         }
     }
 
-    // MARK: - Logic
+    private var resourceBundle: Bundle {
+#if SWIFT_PACKAGE
+        return Bundle.module
+#else
+        return Bundle.main
+#endif
+    }
+
+    // MARK: - Bindings / state
 
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
@@ -137,6 +165,23 @@ struct WelcomeView: View {
 
     private var emlType: UTType? {
         UTType(filenameExtension: "eml") ?? UTType("public.email-message")
+    }
+
+    private var appearanceBinding: Binding<AppearanceMode> {
+        Binding(
+            get: { prefsList.first?.appearance ?? .system },
+            set: { newValue in
+                let prefs: AppPreferences
+                if let existing = prefsList.first {
+                    prefs = existing
+                } else {
+                    prefs = AppPreferences()
+                    modelContext.insert(prefs)
+                }
+                prefs.appearance = newValue
+                try? modelContext.save()
+            }
+        )
     }
 
     private func refreshAssociation() {
