@@ -11,7 +11,7 @@ settings:
     SWIFT_VERSION: "5.9"
     MACOSX_DEPLOYMENT_TARGET: "14.0"
     MARKETING_VERSION: "1.0.0"
-    CURRENT_PROJECT_VERSION: "2"
+    CURRENT_PROJECT_VERSION: "3"
     DEVELOPMENT_TEAM: "89QF7X66FR"
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     SWIFT_STRICT_CONCURRENCY: minimal
@@ -41,7 +41,7 @@ targets:
     sources:
       - path: Sources/EMLViewer
     resources:
-      - path: Resources/AppIcon.icns
+      - path: Sources/EMLViewer/Resources/Assets.xcassets
       - path: Sources/EMLViewer/Resources/github.png
     dependencies:
       - target: EMLCore
