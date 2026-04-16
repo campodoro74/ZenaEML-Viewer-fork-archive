@@ -28,7 +28,7 @@ struct WelcomeView: View {
                 Text("Version \(appVersion)")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
-                Text("Minimalist .eml viewer for macOS")
+                Text("Minimalist viewer for .eml and .msg files")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }
@@ -80,13 +80,13 @@ struct WelcomeView: View {
         HStack(spacing: 8) {
             if isDefault {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                Text("Default for .eml files")
+                Text("Default for .eml and .msg files")
                     .font(.system(size: 12))
             } else {
                 Button {
                     setAsDefault()
                 } label: {
-                    Label("Set as default for .eml", systemImage: "paperclip.badge.ellipsis")
+                    Label("Set as default for .eml and .msg", systemImage: "paperclip.badge.ellipsis")
                         .frame(width: 240)
                 }
                 .controlSize(.regular)
@@ -163,8 +163,15 @@ struct WelcomeView: View {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
     }
 
-    private var emlType: UTType? {
-        UTType(filenameExtension: "eml") ?? UTType("public.email-message")
+    private var supportedTypes: [UTType] {
+        var types: [UTType] = []
+        if let t = UTType(filenameExtension: "eml") ?? UTType("public.email-message") {
+            types.append(t)
+        }
+        if let t = UTType(filenameExtension: "msg") ?? UTType("com.microsoft.outlook-email-message") {
+            types.append(t)
+        }
+        return types
     }
 
     private var appearanceBinding: Binding<AppearanceMode> {
@@ -180,25 +187,30 @@ struct WelcomeView: View {
                 }
                 prefs.appearance = newValue
                 try? modelContext.save()
+                newValue.save()
             }
         )
     }
 
     private func refreshAssociation() {
-        guard let type = emlType else { isDefault = false; return }
         guard let bundleID = Bundle.main.bundleIdentifier else { isDefault = false; return }
+        let types = supportedTypes
+        guard !types.isEmpty else { isDefault = false; return }
 
-        if let handlerURL = NSWorkspace.shared.urlForApplication(toOpen: type),
-           let bundle = Bundle(url: handlerURL),
-           bundle.bundleIdentifier == bundleID {
-            isDefault = true
-        } else {
-            isDefault = false
+        for type in types {
+            guard let handlerURL = NSWorkspace.shared.urlForApplication(toOpen: type),
+                  let bundle = Bundle(url: handlerURL),
+                  bundle.bundleIdentifier == bundleID else {
+                isDefault = false
+                return
+            }
         }
+        isDefault = true
     }
 
     private func setAsDefault() {
-        guard let type = emlType else {
+        let types = supportedTypes
+        guard !types.isEmpty else {
             assocStatus = "UTType lookup failed"
             return
         }
@@ -207,12 +219,20 @@ struct WelcomeView: View {
         assocStatus = nil
 
         Task { @MainActor in
-            do {
-                try await NSWorkspace.shared.setDefaultApplication(at: appURL, toOpen: type)
+            var failure: Error?
+            for type in types {
+                do {
+                    try await NSWorkspace.shared.setDefaultApplication(at: appURL, toOpen: type)
+                } catch {
+                    failure = error
+                    break
+                }
+            }
+            if let failure {
+                assocStatus = "Could not set: \(failure.localizedDescription)"
+            } else {
                 assocStatus = "EMLViewer is now the default"
                 refreshAssociation()
-            } catch {
-                assocStatus = "Could not set: \(error.localizedDescription)"
             }
             working = false
         }

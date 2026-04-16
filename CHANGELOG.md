@@ -1,10 +1,18 @@
 # Changelog
 
+## [1.1.0] - 2026-04-16
+
+### Added
+
+- Outlook `.msg` (Compound File Binary) support via a native CFB/MAPI reader — no external dependencies. Subject, sender, recipients and plain body are decoded from MAPI property streams.
+- Finder association for `.msg` and a Welcome action that registers EMLViewer as the default handler for both `.eml` and `.msg`.
+
 ## [1.0.0] - 2026-04-16
 
 ### Added
+
 - Initial release of EMLViewer, a minimalist `.eml` viewer for macOS.
-- MIME parser with RFC 2047 encoded-word, quoted-printable, base64, and charset decoding (UTF-8, Windows-125x, ISO-8859-*).
+- MIME parser with RFC 2047 encoded-word, quoted-printable, base64, and charset decoding (UTF-8, Windows-125x, ISO-8859-\*).
 - Nested `multipart/mixed`, `multipart/related`, and `multipart/alternative` support; inline image resolution via `cid:` URL scheme.
 - SwiftUI UI: decoded headers, `WKWebView` HTML rendering, horizontal attachments bar with system file icons.
 - Attachment actions: click to open in the associated app, "Download All" to `~/Downloads`, context menu "Save As…".

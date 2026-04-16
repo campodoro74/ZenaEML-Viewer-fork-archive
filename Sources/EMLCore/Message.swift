@@ -4,7 +4,11 @@ public struct Message {
     public let root: Part
 
     public init(data: Data) {
-        self.root = MIME.parse(data)
+        if MSG.isMSG(data), let part = MSG.parse(data) {
+            self.root = part
+        } else {
+            self.root = MIME.parse(data)
+        }
     }
 
     public init(url: URL) throws {
