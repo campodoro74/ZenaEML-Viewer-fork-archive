@@ -7,7 +7,6 @@ final class MessageTests: XCTestCase {
 
     private func eml(_ body: String) -> Data { Data(body.utf8) }
 
-    // Типичное письмо с plain + html + inline image + attachment
     private var sampleFullMessage: Data {
         let raw = """
         From: Alice <alice@example.com>\r

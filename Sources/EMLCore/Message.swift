@@ -12,8 +12,6 @@ public struct Message {
         self.init(data: data)
     }
 
-    // MARK: - Header accessors (RFC 2047-декодированные)
-
     public var headers: [(String, String)] { root.rawHeaders }
 
     public var from: String    { decodedHeader("From") }

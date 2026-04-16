@@ -63,14 +63,12 @@ icon:
 bundle:
 	bash Scripts/make-app.sh release
 
-# zip .app для GitHub Release asset
 zip: bundle
 	rm -f "$(RELEASE_ZIP)"
 	cd dist && zip -qry "$(APP).app.zip" "$(APP).app"
 	@echo "Built: $(RELEASE_ZIP)"
 	@shasum -a 256 "$(RELEASE_ZIP)"
 
-# Полная локальная проверка перед тегом: тесты + bundle + zip
 preflight: test zip
 	@echo ""
 	@echo "==> Pre-flight complete for v$(VERSION)"

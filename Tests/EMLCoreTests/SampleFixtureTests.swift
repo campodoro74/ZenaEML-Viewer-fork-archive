@@ -1,15 +1,17 @@
 import XCTest
 @testable import EMLCore
 
-// Интеграционный тест на синтетическом фикстурном EML
-// (Tests/EMLCoreTests/Fixtures/sample.eml), который не содержит
-// чужих персональных данных.
-
 final class SampleFixtureTests: XCTestCase {
 
     private func loadSample() throws -> Message {
+#if SWIFT_PACKAGE
+        let bundle = Bundle.module
+#else
+        let bundle = Bundle(for: SampleFixtureTests.self)
+#endif
         let url = try XCTUnwrap(
-            Bundle.module.url(forResource: "sample", withExtension: "eml", subdirectory: "Fixtures"),
+            bundle.url(forResource: "sample", withExtension: "eml", subdirectory: "Fixtures")
+                ?? bundle.url(forResource: "sample", withExtension: "eml"),
             "sample.eml fixture must be bundled with tests"
         )
         return try Message(url: url)

@@ -4,8 +4,8 @@
 
 # EMLViewer
 
-Minimalist `.eml` viewer for macOS. Double-click an email file in Finder — see it.
-Built with Swift, SwiftUI, AppKit and WKWebView. No Electron, no dependencies.
+Minimalist `.eml` viewer for macOS. Double-click an email in Finder — the window opens, renders the message and gets out of your way.
+Built with Swift, SwiftUI, AppKit and WKWebView. Zero runtime dependencies.
 
 ## Features
 
@@ -13,9 +13,9 @@ Built with Swift, SwiftUI, AppKit and WKWebView. No Electron, no dependencies.
 - Decoded headers: `From`, `To`, `Cc`, `Subject` (RFC 2047 encoded-words), `Date`
 - HTML rendering via `WKWebView` with inline `cid:` images resolved from MIME parts
 - Plain-text fallback for emails without an HTML part
-- Attachments bar with real system file icons; click to open, "Download All" to `~/Downloads`
-- Welcome screen with one-click "Set as default for `.eml` files"
-- Drag-and-drop support and CLI opening (`open -a EMLViewer file.eml`)
+- Attachments bar with Finder-style file icons; click to open in the default app, "Download All" to `~/Downloads`
+- Works through Finder association: after a one-click `Set as default for .eml`, double-clicking a message just opens the window, reads the file, and shows it. No onboarding, no tray, no background daemon.
+- Light / Dark / System appearance, window size persisted across launches (SwiftData)
 - `emlcheck` CLI companion for inspecting MIME trees from the terminal
 
 ## Install
@@ -33,28 +33,45 @@ Grab the latest `EMLViewer.app.zip` from [Releases](https://github.com/noma4i/em
 
 ## Requirements
 
-- macOS 13.0+ (Ventura or later)
+- macOS 14.0+ (Sonoma or later — SwiftData)
 - Swift 5.9+
-- Xcode 15+ (for `swift` CLI and `WebKit`/`SwiftUI` frameworks)
+- Xcode 15+ (or just the Swift CLI for SPM builds)
+- For Xcode project regeneration: [`xcodegen`](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
 
 ## Build
 
+### Quick (SPM)
+
 ```bash
-make bundle     # Release .app in dist/EMLViewer.app
-make install    # Copy into /Applications
+make bundle      # dist/EMLViewer.app (release, ad-hoc signed)
+make install     # copy into /Applications
 ```
 
-## Run
+### Build + restart app (debug loop)
 
 ```bash
-make run            # Debug build + launch
-make cli FILE=x.eml # Dump MIME tree of a .eml via emlcheck
+./Scripts/build.sh          # debug: kills the running instance, rebuilds, opens the new .app
+./Scripts/build.sh release  # same but release config
+# or
+make run                    # alias for ./Scripts/build.sh debug
+```
+
+### Xcode project (for App Store / signed archive)
+
+The Xcode project is generated from `project.yml`:
+
+```bash
+xcodegen generate
+open EMLViewer.xcodeproj
+# or build from CLI:
+xcodebuild -project EMLViewer.xcodeproj -scheme EMLViewer -configuration Release build
 ```
 
 ## Test
 
 ```bash
-make test
+make test              # swift test (SPM)
+xcodebuild -project EMLViewer.xcodeproj -scheme EMLViewer test
 ```
 
 ## License

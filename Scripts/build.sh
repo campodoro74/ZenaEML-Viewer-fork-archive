@@ -1,9 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# build.sh [debug|release] — сборка + упаковка .app + ad-hoc подпись + перезапуск
-# Аналог clipmoar/scripts/build.sh.
-
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 

@@ -6,9 +6,9 @@ cd "$PROJECT_ROOT"
 
 SOURCE="Resources/AppIcon.source.png"
 OUTPUT="Resources/AppIcon.icns"
-CONTENT=820          # Размер envelope внутри финального 1024x1024 canvas
+CONTENT=820
 CANVAS=1024
-FUZZ=8%              # Насколько "белым" считать фон при удалении
+FUZZ=8%
 
 TMP="$(mktemp -d)"
 ICONSET="$TMP/AppIcon.iconset"
@@ -52,8 +52,6 @@ gen_size 1024  "icon_512x512@2x.png"
 
 if command -v pngquant >/dev/null; then
     echo "==> Palette quantization (pngquant)"
-    # 8-bit indexed palette: для градиентной envelope визуально почти не отличается,
-    # но уменьшает размер PNG в 3-5 раз.
     for f in "$ICONSET"/*.png; do
         pngquant --force --quality=78-95 --speed 1 --strip --output "$f" -- "$f" || true
     done

@@ -22,14 +22,12 @@ cp "$BUILD_DIR/$APP_NAME" "$APP_BUNDLE/Contents/MacOS/$APP_NAME"
 cp "Resources/Info.plist" "$APP_BUNDLE/Contents/Info.plist"
 printf "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
-# Иконка приложения
 if [ ! -f "Resources/AppIcon.icns" ]; then
     echo "==> Generating AppIcon.icns"
     bash Scripts/make-icon.sh
 fi
 cp "Resources/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/AppIcon.icns"
 
-# Копируем SwiftPM resource bundle в Contents/Resources, чтобы Bundle.module работал
 for bundle in "$BUILD_DIR"/*_*.bundle; do
     [ -e "$bundle" ] || continue
     cp -R "$bundle" "$APP_BUNDLE/Contents/Resources/"

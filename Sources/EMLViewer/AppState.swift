@@ -44,7 +44,6 @@ final class AppState: ObservableObject {
 
     // MARK: - Attachment actions
 
-    /// Сохраняет тело части во временный файл и открывает его в ассоциированном приложении.
     func openAttachment(_ part: Part) {
         guard let url = writeToTemp(part) else {
             NSSound.beep(); return
@@ -52,7 +51,6 @@ final class AppState: ObservableObject {
         NSWorkspace.shared.open(url)
     }
 
-    /// Save As… через стандартный NSSavePanel.
     func saveAsAttachment(_ part: Part) {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = part.filename ?? "attachment"
@@ -61,7 +59,6 @@ final class AppState: ObservableObject {
         }
     }
 
-    /// Сохраняет все вложения сразу в ~/Downloads, разрешая коллизии имён.
     func downloadAll(_ attachments: [Part]) {
         guard !attachments.isEmpty else { return }
         let dir = downloadsDirectory()

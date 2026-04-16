@@ -152,7 +152,6 @@ public enum MIME {
             if let asterisk = k.firstIndex(of: "*") {
                 let base = String(k[..<asterisk])
                 let rest = String(k[k.index(after: asterisk)...])
-                // Формы: name*, name*0, name*0*, name*N*
                 if rest.isEmpty || rest == "" {
                     // name* = charset'lang'encoded
                     let parts = v.split(separator: "'", maxSplits: 2, omittingEmptySubsequences: false).map(String.init)
@@ -249,7 +248,6 @@ public enum MIME {
         var parts: [Data] = []
         for idx in 0..<(positions.count - 1) {
             var start = positions[idx] + sepBytes.count
-            // Пропустить `--` терминатора, если это конец — всё равно не используем как start
             if start < bytes.count, bytes[start] == 0x0D { start += 1 }
             if start < bytes.count, bytes[start] == 0x0A { start += 1 }
 

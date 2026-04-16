@@ -31,7 +31,6 @@ struct WebView: NSViewRepresentable {
     }
 
     private func wrappedHTML(_ inner: String) -> String {
-        // Если документ содержит <html>, возвращаем как есть.
         let lower = inner.lowercased()
         if lower.contains("<html") { return inner }
         return """
@@ -46,7 +45,6 @@ struct WebView: NSViewRepresentable {
         var handler: CIDSchemeHandler?
         var loadedHash: Int = 0
 
-        // Открываем внешние ссылки в браузере пользователя
         func webView(_ webView: WKWebView,
                      decidePolicyFor navigationAction: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {

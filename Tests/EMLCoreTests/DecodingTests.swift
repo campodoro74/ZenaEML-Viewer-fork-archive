@@ -84,7 +84,6 @@ final class DecodingTests: XCTestCase {
     }
 
     func testEncodedWordAdjacentStripsWhitespace() {
-        // RFC 2047: whitespace между соседними encoded-words отбрасывается
         let input = "=?UTF-8?B?SGVsbG8=?= =?UTF-8?B?V29ybGQ=?="
         let decoded = Decoding.decodeEncodedWords(input)
         XCTAssertEqual(decoded, "HelloWorld")
@@ -97,7 +96,6 @@ final class DecodingTests: XCTestCase {
     }
 
     func testEncodedWordWindows1252() {
-        // 0x93 0x94 = "smart quotes" в Windows-1252
         let input = "=?Windows-1252?Q?=93hi=94?="
         let decoded = Decoding.decodeEncodedWords(input)
         XCTAssertEqual(decoded, "\u{201C}hi\u{201D}")
