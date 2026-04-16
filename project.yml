@@ -1,0 +1,142 @@
+name: EMLViewer
+options:
+  bundleIdPrefix: com.noma4i
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  minimumXcodeGenVersion: "2.40.0"
+  groupSortPosition: top
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_STRICT_CONCURRENCY: minimal
+    CODE_SIGN_STYLE: Automatic
+    PRODUCT_NAME: "$(TARGET_NAME)"
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ENABLE_HARDENED_RUNTIME: YES
+
+targets:
+  EMLCore:
+    type: framework.static
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources/EMLCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.noma4i.EMLCore
+        DEFINES_MODULE: YES
+        SKIP_INSTALL: YES
+        GENERATE_INFOPLIST_FILE: YES
+
+  EMLViewer:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources/EMLViewer
+    resources:
+      - path: Resources/AppIcon.icns
+      - path: Sources/EMLViewer/Resources/github.png
+    dependencies:
+      - target: EMLCore
+        embed: false
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleDisplayName: EMLViewer
+        CFBundleName: EMLViewer
+        CFBundleIconFile: AppIcon
+        CFBundleIconName: AppIcon
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
+        NSHighResolutionCapable: true
+        NSPrincipalClass: NSApplication
+        NSSupportsAutomaticTermination: true
+        NSSupportsSuddenTermination: true
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Email Message
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            CFBundleTypeExtensions: [eml, emlx]
+            LSItemContentTypes:
+              - public.email-message
+              - com.apple.mail.email
+              - public.eml
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: public.eml
+            UTTypeDescription: Email Message
+            UTTypeConformsTo:
+              - public.data
+              - public.content
+            UTTypeTagSpecification:
+              public.filename-extension: [eml]
+              public.mime-type: [message/rfc822]
+    entitlements:
+      path: Resources/EMLViewer.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.files.user-selected.read-only: true
+        com.apple.security.files.user-selected.read-write: true
+        com.apple.security.files.downloads.read-write: true
+        com.apple.security.network.client: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.noma4i.EMLViewer
+        GENERATE_INFOPLIST_FILE: NO
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - "@executable_path/../Frameworks"
+
+  emlcheck:
+    type: tool
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources/emlcheck
+    dependencies:
+      - target: EMLCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.noma4i.emlcheck
+
+  EMLCoreTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Tests/EMLCoreTests
+    resources:
+      - path: Tests/EMLCoreTests/Fixtures
+    dependencies:
+      - target: EMLCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.noma4i.EMLCoreTests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  EMLViewer:
+    build:
+      targets:
+        EMLViewer: all
+        EMLCore: all
+        emlcheck: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - EMLCoreTests
+    archive:
+      config: Release
+    profile:
+      config: Release
+    analyze:
+      config: Debug

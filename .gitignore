@@ -4,6 +4,7 @@ dist/
 DerivedData/
 *.xcodeproj/
 *.xcworkspace/
+xcuserdata/
 .DS_Store
 Package.resolved
 
