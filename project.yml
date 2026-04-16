@@ -46,51 +46,13 @@ targets:
     dependencies:
       - target: EMLCore
         embed: false
-    info:
-      path: Resources/Info.plist
-      properties:
-        CFBundleDisplayName: EMLViewer
-        CFBundleName: EMLViewer
-        CFBundleIconFile: AppIcon
-        CFBundleIconName: AppIcon
-        CFBundleShortVersionString: "$(MARKETING_VERSION)"
-        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
-        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
-        NSHighResolutionCapable: true
-        NSPrincipalClass: NSApplication
-        NSSupportsAutomaticTermination: true
-        NSSupportsSuddenTermination: true
-        CFBundleDocumentTypes:
-          - CFBundleTypeName: Email Message
-            CFBundleTypeRole: Viewer
-            LSHandlerRank: Alternate
-            CFBundleTypeExtensions: [eml, emlx]
-            LSItemContentTypes:
-              - public.email-message
-              - com.apple.mail.email
-              - public.eml
-        UTImportedTypeDeclarations:
-          - UTTypeIdentifier: public.eml
-            UTTypeDescription: Email Message
-            UTTypeConformsTo:
-              - public.data
-              - public.content
-            UTTypeTagSpecification:
-              public.filename-extension: [eml]
-              public.mime-type: [message/rfc822]
-    entitlements:
-      path: Resources/EMLViewer.entitlements
-      properties:
-        com.apple.security.app-sandbox: true
-        com.apple.security.files.user-selected.read-only: true
-        com.apple.security.files.user-selected.read-write: true
-        com.apple.security.files.downloads.read-write: true
-        com.apple.security.network.client: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.noma4i.EMLViewer
         GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Resources/Info.plist
         COMBINE_HIDPI_IMAGES: YES
+        CODE_SIGN_ENTITLEMENTS: Resources/EMLViewer-AppStore.entitlements
         LD_RUNPATH_SEARCH_PATHS:
           - "@executable_path/../Frameworks"
 
@@ -104,7 +66,7 @@ targets:
       - target: EMLCore
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.noma4i.emlcheck
+        PRODUCT_BUNDLE_IDENTIFIER: com.noma4i.emlviewer
 
   EMLCoreTests:
     type: bundle.unit-test

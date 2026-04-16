@@ -35,7 +35,7 @@ done
 
 echo "==> Ad-hoc signing"
 codesign --force --deep --sign - \
-    --entitlements "Resources/EMLViewer.entitlements" \
+    --entitlements "Resources/EMLViewer-Dev.entitlements" \
     "$APP_BUNDLE"
 
 echo "==> Registering with LaunchServices"
