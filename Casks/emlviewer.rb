@@ -1,6 +1,6 @@
 cask "emlviewer" do
   version "1.0.0"
-  sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  sha256 "8f356231c31542534d34dac6196abe5d8709047af9f023da0755b196eea8d81b"
 
   url "https://github.com/noma4i/emlviewer/releases/download/v#{version}/EMLViewer.app.zip"
   name "EMLViewer"
