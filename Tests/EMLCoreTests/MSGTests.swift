@@ -27,8 +27,8 @@ final class MSGTests: XCTestCase {
         let msg = try loadSample()
         XCTAssertEqual(msg.subject, "Test Outlook message with attachments")
         XCTAssertEqual(msg.from, "Alice Example <alice@example.com>")
-        XCTAssertEqual(msg.to,   "Bob Example <bob@example.com>")
-        XCTAssertEqual(msg.cc,   "Carol Example <carol@example.com>")
+        XCTAssertEqual(msg.to, "Bob Example <bob@example.com>")
+        XCTAssertEqual(msg.cc, "Carol Example <carol@example.com>")
     }
 
     func testDateDecodedFromFiletime() throws {

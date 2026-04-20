@@ -10,7 +10,11 @@ struct EMLViewerApp: App {
     private let modelContainer: ModelContainer = {
         let schema = Schema([AppPreferences.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        return try! ModelContainer(for: schema, configurations: [config])
+        do {
+            return try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            fatalError("Failed to create ModelContainer: \(error)")
+        }
     }()
 
     var body: some Scene {

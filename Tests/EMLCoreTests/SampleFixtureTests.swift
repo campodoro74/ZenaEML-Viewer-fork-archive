@@ -20,8 +20,8 @@ final class SampleFixtureTests: XCTestCase {
     func testHeadersParsed() throws {
         let msg = try loadSample()
         XCTAssertEqual(msg.from, "Alice Example <alice@example.com>")
-        XCTAssertEqual(msg.to,   "Bob Example <bob@example.com>")
-        XCTAssertEqual(msg.cc,   "Carol Example <carol@example.com>")
+        XCTAssertEqual(msg.to, "Bob Example <bob@example.com>")
+        XCTAssertEqual(msg.cc, "Carol Example <carol@example.com>")
         XCTAssertEqual(msg.subject, "Café meetup on Friday")
         XCTAssertEqual(msg.date, "Fri, 10 Apr 2026 14:30:00 +0000")
     }

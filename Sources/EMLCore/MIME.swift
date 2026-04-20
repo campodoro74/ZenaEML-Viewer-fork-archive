@@ -8,9 +8,9 @@ public struct Part {
     public var contentType: String = "text/plain"
     public var contentTypeParams: [String: String] = [:]
     public var encoding: String = "7bit"
-    public var disposition: String? = nil
+    public var disposition: String?
     public var dispositionParams: [String: String] = [:]
-    public var contentID: String? = nil
+    public var contentID: String?
 
     public var charset: String? { contentTypeParams["charset"] }
     public var boundary: String? { contentTypeParams["boundary"] }
@@ -124,9 +124,15 @@ public enum MIME {
         var current = ""
         var inQuotes = false
         for c in s {
-            if c == "\"" { inQuotes.toggle(); current.append(c) }
-            else if c == ";" && !inQuotes { segments.append(current); current = "" }
-            else { current.append(c) }
+            if c == "\"" {
+                inQuotes.toggle()
+                current.append(c)
+            } else if c == ";" && !inQuotes {
+                segments.append(current)
+                current = ""
+            } else {
+                current.append(c)
+            }
         }
         if !current.isEmpty { segments.append(current) }
 
@@ -152,7 +158,7 @@ public enum MIME {
             if let asterisk = k.firstIndex(of: "*") {
                 let base = String(k[..<asterisk])
                 let rest = String(k[k.index(after: asterisk)...])
-                if rest.isEmpty || rest == "" {
+                if rest.isEmpty {
                     // name* = charset'lang'encoded
                     let parts = v.split(separator: "'", maxSplits: 2, omittingEmptySubsequences: false).map(String.init)
                     if parts.count == 3 {

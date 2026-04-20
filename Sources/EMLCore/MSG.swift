@@ -379,7 +379,7 @@ struct CFB {
             visited.insert(idx)
             out.append(Int(idx))
             let e = entries[Int(idx)]
-            if e.leftSibling  != 0xFFFFFFFF { stack.append(e.leftSibling) }
+            if e.leftSibling != 0xFFFFFFFF { stack.append(e.leftSibling) }
             if e.rightSibling != 0xFFFFFFFF { stack.append(e.rightSibling) }
         }
         return out
@@ -475,9 +475,9 @@ struct CFB {
                 name = ""
             }
             let type  = data[base + 66]
-            let left  = readU32(data, at: base + 68  - data.startIndex)
-            let right = readU32(data, at: base + 72  - data.startIndex)
-            let child = readU32(data, at: base + 76  - data.startIndex)
+            let left  = readU32(data, at: base + 68 - data.startIndex)
+            let right = readU32(data, at: base + 72 - data.startIndex)
+            let child = readU32(data, at: base + 76 - data.startIndex)
             let start = readU32(data, at: base + 116 - data.startIndex)
             let size  = readU64(data, at: base + 120 - data.startIndex)
             entries.append(Entry(

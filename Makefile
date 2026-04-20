@@ -6,7 +6,7 @@ TEST_FILE    ?= test.eml
 LSREG        := /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 VERSION       = $(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)
 
-.PHONY: all build release debug run run-debug bundle install uninstall clean check test cli icon zip print-version
+.PHONY: all build release debug run run-debug bundle install uninstall clean check test test-xcode cli icon zip print-version lint lint-strict
 
 all: bundle
 
@@ -53,6 +53,23 @@ test-xcode:
 	xcodebuild -project EMLViewer.xcodeproj -scheme EMLViewer -configuration Debug -destination 'platform=macOS,arch=arm64' test
 
 # -----------------------------------------------------------------------------
+# Lint
+# -----------------------------------------------------------------------------
+
+lint:
+	@if ! command -v swiftlint >/dev/null; then \
+	    echo "error: swiftlint not installed (brew install swiftlint)" >&2; exit 1; \
+	fi
+	swiftlint lint --quiet
+
+# Strict mode: any violation (warning or error) fails the run
+lint-strict:
+	@if ! command -v swiftlint >/dev/null; then \
+	    echo "error: swiftlint not installed (brew install swiftlint)" >&2; exit 1; \
+	fi
+	swiftlint lint --quiet --strict
+
+# -----------------------------------------------------------------------------
 # Icon
 # -----------------------------------------------------------------------------
 
@@ -72,7 +89,7 @@ zip: bundle
 	@echo "Built: $(RELEASE_ZIP)"
 	@shasum -a 256 "$(RELEASE_ZIP)"
 
-preflight: test zip
+preflight: lint test zip
 	@echo ""
 	@echo "==> Pre-flight complete for v$(VERSION)"
 	@echo "    Asset:   $(RELEASE_ZIP)"

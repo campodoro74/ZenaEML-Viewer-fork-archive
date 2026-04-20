@@ -104,7 +104,9 @@ final class WindowTracker: ObservableObject {
             queue: .main
         ) { [weak self] note in
             guard let window = note.object as? NSWindow else { return }
-            self?.onResize(window.frame)
+            MainActor.assumeIsolated {
+                self?.onResize(window.frame)
+            }
         }
     }
 
@@ -116,18 +118,18 @@ final class WindowTracker: ObservableObject {
 }
 
 struct WindowAccessor: NSViewRepresentable {
-    let onWindow: (NSWindow) -> Void
+    let onWindow: @MainActor (NSWindow) -> Void
 
     func makeNSView(context: Context) -> NSView {
         let view = NSView(frame: .zero)
-        DispatchQueue.main.async {
+        Task { @MainActor in
             if let w = view.window { onWindow(w) }
         }
         return view
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             if let w = nsView.window { onWindow(w) }
         }
     }
@@ -194,7 +196,7 @@ struct HeaderPanel: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 row("From", message.from)
-                row("To",   message.to)
+                row("To", message.to)
                 if !message.cc.isEmpty { row("Cc", message.cc) }
                 row("Date", message.date)
             }
@@ -355,14 +357,11 @@ struct FileIcon: NSViewRepresentable {
         let ws = NSWorkspace.shared
         if let name = part.filename {
             let ext = (name as NSString).pathExtension
-            if !ext.isEmpty {
-                return ws.icon(forFileType: ext)
+            if !ext.isEmpty, let type = UTType(filenameExtension: ext) {
+                return ws.icon(for: type)
             }
         }
         if let type = UTType(mimeType: part.contentType) {
-            if let tag = type.preferredFilenameExtension {
-                return ws.icon(forFileType: tag)
-            }
             return ws.icon(for: type)
         }
         return ws.icon(for: .data)

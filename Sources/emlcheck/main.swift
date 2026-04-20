@@ -31,7 +31,7 @@ do {
     print("=== Headers ===")
     print("From:    \(msg.from)")
     print("To:      \(msg.to)")
-    if !msg.cc.isEmpty      { print("CC:      \(msg.cc)") }
+    if !msg.cc.isEmpty { print("CC:      \(msg.cc)") }
     if !msg.replyTo.isEmpty { print("ReplyTo: \(msg.replyTo)") }
     print("Subject: \(msg.subject)")
     print("Date:    \(msg.date)")
@@ -41,7 +41,7 @@ do {
 
     print("\n=== Bodies ===")
     if let plain = msg.plainBody { print("text/plain: \(plain.count) chars") }
-    if let html  = msg.htmlBody  { print("text/html:  \(html.count) chars") }
+    if let html  = msg.htmlBody { print("text/html:  \(html.count) chars") }
 
     let inlines = msg.inlineParts
     print("\n=== Inline (\(inlines.count)) ===")

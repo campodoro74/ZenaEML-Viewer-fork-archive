@@ -18,12 +18,12 @@ public struct Message {
 
     public var headers: [(String, String)] { root.rawHeaders }
 
-    public var from: String    { decodedHeader("From") }
-    public var to: String      { decodedHeader("To") }
-    public var cc: String      { decodedHeader("Cc") }
-    public var bcc: String     { decodedHeader("Bcc") }
+    public var from: String { decodedHeader("From") }
+    public var to: String { decodedHeader("To") }
+    public var cc: String { decodedHeader("Cc") }
+    public var bcc: String { decodedHeader("Bcc") }
     public var subject: String { decodedHeader("Subject") }
-    public var date: String    { decodedHeader("Date") }
+    public var date: String { decodedHeader("Date") }
     public var replyTo: String { decodedHeader("Reply-To") }
 
     public func decodedHeader(_ name: String) -> String {
@@ -102,7 +102,7 @@ public struct Message {
 
     public func partByContentID(_ cid: String) -> Part? {
         let clean = cid.trimmingCharacters(in: CharacterSet(charactersIn: "<> \t\r\n"))
-        var found: Part? = nil
+        var found: Part?
         walk(root) { p in
             if found == nil, let id = p.contentID, id == clean {
                 found = p

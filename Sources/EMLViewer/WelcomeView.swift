@@ -9,10 +9,11 @@ struct WelcomeView: View {
     @Query private var prefsList: [AppPreferences]
 
     @State private var isDefault: Bool = false
-    @State private var assocStatus: String? = nil
+    @State private var assocStatus: String?
     @State private var working: Bool = false
 
-    private let githubURL = URL(string: "https://github.com/noma4i/emlviewer")!
+    private static let githubURLString = "https://github.com/noma4i/emlviewer"
+    private var githubURL: URL { URL(string: Self.githubURLString) ?? URL(fileURLWithPath: "/") }
 
     var body: some View {
         VStack(spacing: 14) {

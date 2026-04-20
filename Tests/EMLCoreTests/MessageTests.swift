@@ -56,8 +56,8 @@ final class MessageTests: XCTestCase {
     func testFromToCcSubjectDate() {
         let msg = Message(data: sampleFullMessage)
         XCTAssertEqual(msg.from, "Alice <alice@example.com>")
-        XCTAssertEqual(msg.to,   "Bob <bob@example.com>")
-        XCTAssertEqual(msg.cc,   "Carol <carol@example.com>")
+        XCTAssertEqual(msg.to, "Bob <bob@example.com>")
+        XCTAssertEqual(msg.cc, "Carol <carol@example.com>")
         XCTAssertEqual(msg.subject, "Café meetup")
         XCTAssertEqual(msg.date, "Wed, 25 Mar 2026 04:26:52 +0000")
     }
@@ -94,9 +94,10 @@ final class MessageTests: XCTestCase {
 
     func testPartByContentID() {
         let msg = Message(data: sampleFullMessage)
-        let part = msg.partByContentID("logo@ex")
-        XCTAssertNotNil(part)
-        XCTAssertEqual(String(data: part!.decodedBody(), encoding: .utf8), "hello")
+        guard let part = msg.partByContentID("logo@ex") else {
+            XCTFail("expected part for content-id logo@ex"); return
+        }
+        XCTAssertEqual(String(data: part.decodedBody(), encoding: .utf8), "hello")
     }
 
     func testPartByContentIDStripsAngleBrackets() {
