@@ -11,35 +11,34 @@ VERSION       = $(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionS
 all: bundle
 
 # -----------------------------------------------------------------------------
-# Build
+# Build (Xcode → dist/)
 # -----------------------------------------------------------------------------
 
-# Debug build (all products)
+# Debug build → dist/EMLViewer.app
 debug:
-	swift build
+	bash Scripts/build.sh debug
 
-# Release build (all products)
-release: release-bin
+# Release build → dist/EMLViewer.app
+release:
+	bash Scripts/build.sh release
 
-release-bin:
-	swift build -c release
-
-# Alias for release build
-build: release-bin
+# Alias
+build: release
 
 # -----------------------------------------------------------------------------
 # Run
 # -----------------------------------------------------------------------------
 
-# Build + assemble .app + restart (debug by default)
+# Build + restart (debug by default)
 run:
-	bash Scripts/build.sh debug
+	bash Scripts/build.sh debug --open
 
 run-release:
-	bash Scripts/build.sh release
+	bash Scripts/build.sh release --open
 
-# Run the CLI parser on a sample
-cli: release-bin
+# Run the CLI parser on a sample (SPM — emlcheck стоит отдельно от .app)
+cli:
+	swift build -c release --product emlcheck
 	.build/release/emlcheck "$(TEST_FILE)"
 
 # -----------------------------------------------------------------------------
@@ -48,6 +47,10 @@ cli: release-bin
 
 test:
 	swift test
+
+# Full Xcode test run (runs the same XCTest suite through xcodebuild)
+test-xcode:
+	xcodebuild -project EMLViewer.xcodeproj -scheme EMLViewer -configuration Debug -destination 'platform=macOS,arch=arm64' test
 
 # -----------------------------------------------------------------------------
 # Icon
@@ -61,7 +64,7 @@ icon:
 # -----------------------------------------------------------------------------
 
 bundle:
-	bash Scripts/make-app.sh release
+	bash Scripts/build.sh release
 
 zip: bundle
 	rm -f "$(RELEASE_ZIP)"
@@ -102,4 +105,4 @@ check:
 
 clean:
 	swift package clean
-	rm -rf .build dist
+	rm -rf .build dist build

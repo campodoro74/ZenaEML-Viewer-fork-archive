@@ -17,9 +17,6 @@ echo "==> ensure App ID + Mac App Store provisioning profile"
 PROFILE_NAME=$(python3 Scripts/asc-profile.py | tail -1)
 echo "    profile: $PROFILE_NAME"
 
-echo "==> xcodegen generate"
-xcodegen generate
-
 echo "==> xcodebuild archive (manual signing, Apple Distribution)"
 rm -rf "$ARCHIVE_PATH" "$EXPORT_DIR"
 xcodebuild archive \

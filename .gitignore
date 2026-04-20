@@ -2,9 +2,10 @@
 .swiftpm/
 dist/
 DerivedData/
-*.xcodeproj/
 *.xcworkspace/
 xcuserdata/
+EMLViewer.xcodeproj/project.xcworkspace/xcuserdata/
+EMLViewer.xcodeproj/xcuserdata/
 .DS_Store
 Package.resolved
 

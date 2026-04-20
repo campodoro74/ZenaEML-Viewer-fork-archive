@@ -40,29 +40,21 @@ Grab the latest `EMLViewer.app.zip` from [Releases](https://github.com/noma4i/em
 
 - macOS 14.0+ (Sonoma or later, required by SwiftData)
 - Swift 5.9+
-- Xcode 15+ (or just the Swift CLI for SPM builds)
-- [`xcodegen`](https://github.com/yonaskolb/XcodeGen) for regenerating the Xcode project (`brew install xcodegen`)
+- Xcode 15+
 
 ## Build
 
-### Quick (SPM)
+The `.app` is always built by Xcode (`xcodebuild`) and written to `dist/`.
 
 ```bash
 make bundle      # dist/EMLViewer.app (release, ad-hoc signed)
+make run         # debug build + launch
 make install     # copy into /Applications
 ```
 
-### Debug loop
+### Xcode IDE
 
 ```bash
-make run                     # kill running instance, rebuild debug, open the new .app
-./Scripts/build.sh release   # same but release config
-```
-
-### Xcode project (for App Store / signed archive)
-
-```bash
-xcodegen generate
 open EMLViewer.xcodeproj
 ```
 
