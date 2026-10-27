@@ -1,20 +1,20 @@
-cask "emlviewer" do
-  version "1.0.0"
-  sha256 "8f356231c31542534d34dac6196abe5d8709047af9f023da0755b196eea8d81b"
+cask "zenaeml-viewer" do
+  version "1.1.0"
+  sha256 :no_check
 
-  url "https://github.com/noma4i/emlviewer/releases/download/v#{version}/EMLViewer.app.zip"
-  name "EMLViewer"
-  desc "Minimalist .eml viewer for macOS"
-  homepage "https://github.com/noma4i/emlviewer"
+  url "https://github.com/campodoro74/ZenaEML-Viewer/releases/download/v#{version}/EMLViewer.app.zip"
+  name "ZenaEML Viewer"
+  desc "ZenaConsult .eml / .msg viewer with Finder Quick Look"
+  homepage "https://github.com/campodoro74/ZenaEML-Viewer"
 
-  depends_on macos: ">= :ventura"
+  depends_on macos: ">= :sonoma"
 
   app "EMLViewer.app"
 
   zap trash: [
-    "~/Library/Preferences/com.noma4i.EMLViewer.plist",
+    "~/Library/Preferences/it.zenaconsult.ZenaEMLViewer.plist",
     "~/Library/Application Support/EMLViewer",
-    "~/Library/Caches/com.noma4i.EMLViewer",
-    "~/Library/Saved Application State/com.noma4i.EMLViewer.savedState",
+    "~/Library/Caches/it.zenaconsult.ZenaEMLViewer",
+    "~/Library/Saved Application State/it.zenaconsult.ZenaEMLViewer.savedState",
   ]
 end

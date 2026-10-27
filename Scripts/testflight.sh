@@ -42,7 +42,7 @@ cat > "$EXPORT_OPTS" <<EOF
   <key>uploadSymbols</key><true/>
   <key>provisioningProfiles</key>
   <dict>
-    <key>com.noma4i.EMLViewer</key>
+    <key>it.zenaconsult.ZenaEMLViewer</key>
     <string>${PROFILE_NAME}</string>
   </dict>
 </dict></plist>

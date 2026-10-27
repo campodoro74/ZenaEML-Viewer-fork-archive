@@ -12,24 +12,26 @@ struct WelcomeView: View {
     @State private var assocStatus: String?
     @State private var working: Bool = false
 
-    private static let githubURLString = "https://github.com/noma4i/emlviewer"
+    private static let githubURLString = "https://github.com/campodoro74/ZenaEML-Viewer"
     private var githubURL: URL { URL(string: Self.githubURLString) ?? URL(fileURLWithPath: "/") }
 
     var body: some View {
         VStack(spacing: 14) {
             Spacer(minLength: 8)
 
-            Image(systemName: "envelope.open")
-                .font(.system(size: 54, weight: .ultraLight))
-                .foregroundStyle(.tertiary)
+            brandMark
+                .frame(width: 72, height: 72)
 
             VStack(spacing: 4) {
-                Text("EMLViewer")
+                Text("ZenaEML Viewer")
                     .font(.system(size: 20, weight: .semibold))
+                Text("by ZenaConsult")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.secondary)
                 Text("Version \(appVersion)")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
-                Text("Minimalist viewer for .eml and .msg files")
+                Text("Viewer for .eml and .msg files · Finder Quick Look")
                     .font(.system(size: 12))
                     .foregroundStyle(.secondary)
             }
@@ -75,6 +77,23 @@ struct WelcomeView: View {
         .onAppear(perform: refreshAssociation)
     }
 
+    // MARK: - Brand
+
+    @ViewBuilder
+    private var brandMark: some View {
+        if let url = resourceBundle.url(forResource: "zena-logo", withExtension: "png"),
+           let image = NSImage(contentsOf: url) {
+            Image(nsImage: image)
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "envelope.open")
+                .font(.system(size: 54, weight: .ultraLight))
+                .foregroundStyle(.tertiary)
+        }
+    }
+
     // MARK: - Rows
 
     private var associationRow: some View {
@@ -113,25 +132,27 @@ struct WelcomeView: View {
     }
 
     private var footer: some View {
-        HStack(spacing: 12) {
-            Button {
-                NSWorkspace.shared.open(githubURL)
-            } label: {
-                HStack(spacing: 5) {
-                    githubIconView
-                    Text("GitHub")
+        VStack(spacing: 8) {
+            HStack(spacing: 12) {
+                Button {
+                    NSWorkspace.shared.open(githubURL)
+                } label: {
+                    HStack(spacing: 5) {
+                        githubIconView
+                        Text("GitHub")
+                    }
                 }
+                .buttonStyle(.plain)
+                .font(.system(size: 12))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
+                )
             }
-            .buttonStyle(.plain)
-            .font(.system(size: 12))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
-            )
 
-            Text("MIT License · 2026 Alexander Tsirel")
+            Text("ZenaConsult · based on EMLViewer (MIT)")
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
         }
@@ -232,7 +253,7 @@ struct WelcomeView: View {
             if let failure {
                 assocStatus = "Could not set: \(failure.localizedDescription)"
             } else {
-                assocStatus = "EMLViewer is now the default"
+                assocStatus = "ZenaEML Viewer is now the default"
                 refreshAssociation()
             }
             working = false

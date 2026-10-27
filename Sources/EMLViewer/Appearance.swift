@@ -24,7 +24,7 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
         }
     }
 
-    static let userDefaultsKey = "com.noma4i.emlviewer.appearance"
+    static let userDefaultsKey = "it.zenaconsult.zenaemlviewer.appearance"
 
     static func load() -> AppearanceMode {
         let raw = UserDefaults.standard.string(forKey: userDefaultsKey) ?? AppearanceMode.system.rawValue

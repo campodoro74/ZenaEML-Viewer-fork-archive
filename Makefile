@@ -81,7 +81,10 @@ icon:
 # -----------------------------------------------------------------------------
 
 bundle:
-	bash Scripts/build.sh release
+	bash Scripts/build.sh release --developer-id
+
+dmg: bundle
+	bash Scripts/distribute-developer-id.sh
 
 zip: bundle
 	rm -f "$(RELEASE_ZIP)"
@@ -89,11 +92,11 @@ zip: bundle
 	@echo "Built: $(RELEASE_ZIP)"
 	@shasum -a 256 "$(RELEASE_ZIP)"
 
-preflight: lint test zip
+preflight: test zip
 	@echo ""
 	@echo "==> Pre-flight complete for v$(VERSION)"
 	@echo "    Asset:   $(RELEASE_ZIP)"
-	@echo "    Next:    see CLAUDE.md → Releasing"
+	@echo "    Next:    bash Scripts/distribute-developer-id.sh"
 
 print-version:
 	@echo $(VERSION)

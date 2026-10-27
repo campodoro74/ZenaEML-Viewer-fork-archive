@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Ensure App Store readiness for com.noma4i.EMLViewer via App Store Connect API:
+Ensure App Store readiness for it.zenaconsult.ZenaEMLViewer via App Store Connect API:
   - Bundle ID exists
   - Apple Distribution certificate exists (reused if already in Keychain)
   - Mac Installer Distribution certificate exists (created from CSR if missing)
@@ -13,7 +13,7 @@ Env:
   ASC_KEY_ID     - key ID (10 chars)
   ASC_ISSUER_ID  - issuer UUID
   TEAM           - team ID (default 89QF7X66FR)
-  BUNDLE_ID      - bundle identifier (default com.noma4i.EMLViewer)
+  BUNDLE_ID      - bundle identifier (default it.zenaconsult.ZenaEMLViewer)
   APP_NAME       - app name (default EMLViewer)
   PROFILE_NAME   - profile display name (default "EMLViewer Mac App Store")
   CSR_PATH       - CSR file to use when creating new certs
@@ -38,7 +38,7 @@ KEY_PATH    = os.environ["ASC_KEY_PATH"]
 KEY_ID      = os.environ["ASC_KEY_ID"]
 ISSUER_ID   = os.environ["ASC_ISSUER_ID"]
 TEAM        = os.environ.get("TEAM", "89QF7X66FR")
-BUNDLE_ID   = os.environ.get("BUNDLE_ID", "com.noma4i.EMLViewer")
+BUNDLE_ID   = os.environ.get("BUNDLE_ID", "it.zenaconsult.ZenaEMLViewer")
 APP_NAME    = os.environ.get("APP_NAME", "EMLViewer")
 PROFILE_NM  = os.environ.get("PROFILE_NAME", "EMLViewer Mac App Store")
 CSR_PATH    = os.path.expanduser(os.environ.get(

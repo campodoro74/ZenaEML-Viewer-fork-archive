@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleDisplayName</key>
-    <string>EMLViewer</string>
+    <string>ZenaEML Viewer</string>
     <key>CFBundleExecutable</key>
     <string>EMLViewer</string>
     <key>CFBundleIconFile</key>
@@ -13,17 +13,17 @@
     <key>CFBundleIconName</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
-    <string>com.noma4i.EMLViewer</string>
+    <string>it.zenaconsult.ZenaEMLViewer</string>
     <key>CFBundleName</key>
-    <string>EMLViewer</string>
+    <string>ZenaEML Viewer</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
+    <string>1.1.0</string>
     <key>CFBundleVersion</key>
-    <string>3</string>
+    <string>4</string>
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.productivity</string>
     <key>LSMinimumSystemVersion</key>
@@ -45,7 +45,7 @@
             <key>CFBundleTypeRole</key>
             <string>Viewer</string>
             <key>LSHandlerRank</key>
-            <string>Alternate</string>
+            <string>Owner</string>
             <key>CFBundleTypeExtensions</key>
             <array>
                 <string>eml</string>
@@ -64,7 +64,7 @@
             <key>CFBundleTypeRole</key>
             <string>Viewer</string>
             <key>LSHandlerRank</key>
-            <string>Alternate</string>
+            <string>Owner</string>
             <key>CFBundleTypeExtensions</key>
             <array>
                 <string>msg</string>

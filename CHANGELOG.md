@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0] - 2026-10-27
+
+### Added
+
+- Quick Look Preview Extension (`EMLViewerQuickLook.appex`) for `.eml` / `.emlx` / `.msg` (Finder Space bar).
+- Shared `PreviewHTML` builder in `EMLCore` (headers, sanitized HTML/plain body, `cid:` → QL attachments).
+- Developer ID + notarization scripts (`Scripts/distribute-developer-id.sh`, `Scripts/install-ecotrade.sh`).
+- Ecotrade install notes in `docs/ECOTRADE-INSTALL.md`.
+
+### Changed
+
+- Product rebranded to **ZenaEML Viewer** (ZenaConsult); GitHub home [campodoro74/ZenaEML-Viewer](https://github.com/campodoro74/ZenaEML-Viewer).
+- App icon uses the ZenaConsult shield (`logo-icon.png`).
+- Bundle identifiers → `it.zenaconsult.ZenaEMLViewer` / `.QuickLook` (Team `P675R8Z5DF`).
+- Document handler rank → `Owner` for email / Outlook message UTIs.
+- Release build uses Developer ID entitlements (hardened runtime); derived data under `/tmp` to avoid iCloud xattr codesign failures.
+
 ## [1.0.0] - 2026-04-16
 
 ### Added
