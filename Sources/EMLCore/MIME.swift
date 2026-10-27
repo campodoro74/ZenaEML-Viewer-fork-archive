@@ -47,10 +47,12 @@ public struct Part {
 public enum MIME {
 
     public static func parse(_ data: Data) -> Part {
-        parsePart(data)
+        parsePart(data, depth: 0)
     }
 
-    private static func parsePart(_ data: Data) -> Part {
+    private static let maxNestingDepth = 12
+
+    private static func parsePart(_ data: Data, depth: Int) -> Part {
         var part = Part()
         let (headerData, bodyData) = splitHeadersBody(data)
         part.rawHeaders = parseHeaders(headerData)
@@ -75,9 +77,26 @@ public enum MIME {
         }
 
         if part.isMultipart, let b = part.boundary, !b.isEmpty {
-            part.parts = splitMultipart(bodyData, boundary: b).map(parsePart)
+            part.parts = splitMultipart(bodyData, boundary: b).map { parsePart($0, depth: depth) }
+        } else if depth < maxNestingDepth, Self.isNestedMessage(part.contentType) {
+            // message/rfc822 (and siblings): body is a full RFC 822 message — parse and nest
+            // so findBody / attachments / cid walk can see the inner tree (PEC forwards, etc.).
+            let nestedData = part.decodedBody()
+            if !nestedData.isEmpty {
+                part.parts = [parsePart(nestedData, depth: depth + 1)]
+            }
         }
         return part
+    }
+
+    /// Content types whose body is another email message (not a multipart container).
+    public static func isNestedMessage(_ contentType: String) -> Bool {
+        switch contentType.lowercased() {
+        case "message/rfc822", "message/global", "message/news", "message/rfc822-headers":
+            return true
+        default:
+            return false
+        }
     }
 
     // MARK: - Header parsing

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F2A3B4C5D60718293A4B5E6F /* NestedRFC822Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F2A3B4C5D60718293A4B5E /* NestedRFC822Tests.swift */; };
 		D9F02B3C5E7081A2B3C4D5E6 /* zena-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = C8E91A2B4D6F8091A2B3C4D5 /* zena-logo.png */; };
 		B2C3D4E5F60718293A4B5C6D /* PreviewHTMLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* PreviewHTMLTests.swift */; };
 		7A202273F2E9405DA1EBF02E /* PreviewHTML.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A79930EBE6E4EB5A981F038 /* PreviewHTML.swift */; };
@@ -80,6 +81,7 @@
 /* Begin PBXFileReference section */
 		059F97D4A01BD707836BA76A /* SampleFixtureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleFixtureTests.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5C /* PreviewHTMLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHTMLTests.swift; sourceTree = "<group>"; };
+		E1F2A3B4C5D60718293A4B5E /* NestedRFC822Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestedRFC822Tests.swift; sourceTree = "<group>"; };
 		18B9D9FA9ECB8A9F927AFAEC /* MessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTests.swift; sourceTree = "<group>"; };
 		1F23C324112938F4C6C0AA08 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		1FF6335ED8D482F887165D0C /* MIMETests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIMETests.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				60C1549EE7F91EE1007E0807 /* MSGTests.swift */,
 				059F97D4A01BD707836BA76A /* SampleFixtureTests.swift */,
 				A1B2C3D4E5F60718293A4B5C /* PreviewHTMLTests.swift */,
+				E1F2A3B4C5D60718293A4B5E /* NestedRFC822Tests.swift */,
 			);
 			path = EMLCoreTests;
 			sourceTree = "<group>";
@@ -496,6 +499,7 @@
 				F3769B1B8EAE00683DD5B7D1 /* MessageTests.swift in Sources */,
 				5A20A6E58E713A9379BBDE91 /* SampleFixtureTests.swift in Sources */,
 				B2C3D4E5F60718293A4B5C6D /* PreviewHTMLTests.swift in Sources */,
+				F2A3B4C5D60718293A4B5E6F /* NestedRFC822Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,7 +617,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = P675R8Z5DF;
@@ -732,7 +736,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = P675R8Z5DF;

@@ -47,14 +47,20 @@ public struct Message {
         findBody(root, contentType: contentType)
     }
 
+    /// Depth-first search for a non-empty body part. Skips empty wrappers (common in
+    /// PEC / “Fwd:” shells that only carry a nested `message/rfc822`).
     private func findBody(_ part: Part, contentType: String) -> Part? {
-        if !part.isMultipart,
-           part.contentType == contentType,
+        if part.contentType == contentType,
            part.disposition?.lowercased() != "attachment" {
-            return part
+            let text = part.decodedText().trimmingCharacters(in: .whitespacesAndNewlines)
+            if !text.isEmpty {
+                return part
+            }
         }
         for sub in part.parts {
-            if let f = findBody(sub, contentType: contentType) { return f }
+            if let found = findBody(sub, contentType: contentType) {
+                return found
+            }
         }
         return nil
     }
@@ -80,7 +86,12 @@ public struct Message {
             let isBodyText = (part.contentType == "text/plain" || part.contentType == "text/html") &&
                              disp != "attachment"
             let hasName = part.filename != nil
-            if isExplicitAttachment || (!isBodyText && hasName && disp != "inline") {
+            let isNestedMail = MIME.isNestedMessage(part.contentType)
+            // Nested emails (message/rfc822): list when named or explicitly attached so
+            // the user can open the inner .eml; still recurse so inner files appear too.
+            if isExplicitAttachment
+                || (!isBodyText && hasName && disp != "inline")
+                || (isNestedMail && (isExplicitAttachment || hasName)) {
                 into.append(part)
             }
         }

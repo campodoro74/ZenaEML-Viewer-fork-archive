@@ -45,6 +45,16 @@ final class AppState: ObservableObject {
     // MARK: - Attachment actions
 
     func openAttachment(_ part: Part) {
+        // Nested emails (message/rfc822 / *.eml): open in this window instead of
+        // bouncing through Launch Services.
+        let name = part.filename?.lowercased() ?? ""
+        if MIME.isNestedMessage(part.contentType) || name.hasSuffix(".eml") || name.hasSuffix(".emlx") {
+            let nested = Message(data: part.decodedBody())
+            self.message = nested
+            self.sourceURL = nil
+            self.errorText = nil
+            return
+        }
         guard let url = writeToTemp(part) else {
             NSSound.beep(); return
         }

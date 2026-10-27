@@ -2,6 +2,10 @@
 
 ## [1.1.0] - 2026-10-27
 
+### Fixed
+
+- Nested `message/rfc822` (PEC forwards / email-in-email): unwrap inner HTML body and list `postacert.eml` attachments; open nested `.eml` in-app.
+
 ### Added
 
 - Quick Look Preview Extension (`EMLViewerQuickLook.appex`) for `.eml` / `.emlx` / `.msg` (Finder Space bar).
