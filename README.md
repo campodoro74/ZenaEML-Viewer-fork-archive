@@ -1,65 +1,36 @@
 <p align="center">
-  <img src="Resources/AppIcon.source.png" alt="ZenaEML Viewer" width="180">
+  <img src="Resources/AppIcon.source.png" alt="ZenaEML Viewer" width="160">
 </p>
 
 # ZenaEML Viewer
 
-ZenaConsult macOS viewer for `.eml` / `.emlx` / `.msg` with Finder **Quick Look**. Based on the MIT [EMLViewer](https://github.com/noma4i/emlviewer) project.
+**ZenaConsult** macOS app for reading saved email files without opening Mail or Outlook.
 
-**GitHub:** [campodoro74/ZenaEML-Viewer](https://github.com/campodoro74/ZenaEML-Viewer)
+Double‑click an `.eml`, `.emlx`, or Outlook `.msg` file to see headers, the message body (HTML or plain text), and attachments. Press **Space** in Finder for a Quick Look preview of the same content — including nested PEC / “email inside email” forwards.
+
+## Download
+
+Get the latest build from [Releases](https://github.com/campodoro74/ZenaEML-Viewer/releases/latest):
+
+1. Download **ZenaEML-Viewer.dmg**
+2. Open the disk image and drag **ZenaEML Viewer** into **Applications**
+3. Open the app once, then optionally choose **Set as default for .eml and .msg**
+4. If Finder Quick Look still shows a weak preview: **System Settings → General → Login Items & Extensions → Quick Look** → enable **ZenaEML Viewer Quick Look**
+
+Requires **macOS 14** (Sonoma) or later. Universal binary (Apple silicon and Intel).
+
+## What it does
 
 | | |
 | --- | --- |
-| Display name | ZenaEML Viewer |
-| Bundle id | `it.zenaconsult.ZenaEMLViewer` |
-| Quick Look | `it.zenaconsult.ZenaEMLViewer.QuickLook` |
-| Team | `P675R8Z5DF` |
-| Notarization Apple ID | `dev@zenaconsult.com` |
+| Formats | `.eml`, `.emlx`, Outlook `.msg` |
+| View | From / To / Cc / Subject / Date, HTML or plain body, inline images |
+| Attachments | Open or save; nested `.eml` opens in the same window |
+| Finder | Quick Look (Space bar) and default “Open with” handler |
+| Offline | Everything stays on your Mac — no account, no cloud |
 
-## Features
-
-- Open `.eml` / `.emlx` / `.msg` without Mail or Outlook
-- Finder Space-bar Quick Look (headers + body + attachments)
-- Default document handler (`LSHandlerRank` Owner)
-- Universal binary, macOS 14+
-
-## Ecotrade install
-
-See [docs/ECOTRADE-INSTALL.md](docs/ECOTRADE-INSTALL.md). Signed builds land in `~/Documents/Agent/exports/emlviewer/`.
-
-```bash
-sudo bash Scripts/install-ecotrade.sh /path/to/EMLViewer.app
-```
-
-## Build
-
-Derived data stays under `/tmp` (iCloud xattrs break `codesign`).
-
-```bash
-export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-bash Scripts/build.sh debug --open
-bash Scripts/build.sh release --developer-id
-```
-
-### Notarized DMG
-
-```bash
-xcrun notarytool store-credentials zenaconsult \
-  --apple-id "dev@zenaconsult.com" \
-  --team-id "P675R8Z5DF" \
-  --password "<app-specific-password>"
-
-bash Scripts/distribute-developer-id.sh
-```
-
-## Test
-
-```bash
-export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-xcodebuild -project EMLViewer.xcodeproj -scheme EMLViewer \
-  -destination 'platform=macOS' -derivedDataPath /tmp/emlviewer-dd test
-```
+Useful for archived mail, compliance exports, and Italian PEC receipts that arrive as a forward wrapping `postacert.eml`.
 
 ## License
 
-MIT (upstream EMLViewer + ZenaConsult modifications)
+Copyright © 2026 ZenaConsult. Released under the MIT License — see [LICENSE](LICENSE).

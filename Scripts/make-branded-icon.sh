@@ -7,7 +7,7 @@ if [ -z "$ORIG" ]; then
   ORIG=$(mktemp /tmp/emlviewer-orig.XXXX.png)
   git -C "$ROOT" show 5e9a657:Resources/AppIcon.source.png > "$ORIG"
 fi
-LOGO="$HOME/Documents/Agent/brand/zenaconsult/logo-icon.png"
+LOGO="${ZENA_LOGO:?Set ZENA_LOGO to the ZenaConsult logo PNG path}"
 OUT="$ROOT/Resources/AppIcon.source.png"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT

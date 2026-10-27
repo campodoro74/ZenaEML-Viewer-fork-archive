@@ -36,7 +36,7 @@ run:
 run-release:
 	bash Scripts/build.sh release --open
 
-# Run the CLI parser on a sample (SPM — emlcheck стоит отдельно от .app)
+# Run the CLI parser on a sample file
 cli:
 	swift build -c release --product emlcheck
 	.build/release/emlcheck "$(TEST_FILE)"
@@ -77,26 +77,17 @@ icon:
 	bash Scripts/make-icon.sh
 
 # -----------------------------------------------------------------------------
-# Release packaging
+# Packaging
 # -----------------------------------------------------------------------------
 
 bundle:
 	bash Scripts/build.sh release --developer-id
-
-dmg: bundle
-	bash Scripts/distribute-developer-id.sh
 
 zip: bundle
 	rm -f "$(RELEASE_ZIP)"
 	cd dist && zip -qry "$(APP).app.zip" "$(APP).app"
 	@echo "Built: $(RELEASE_ZIP)"
 	@shasum -a 256 "$(RELEASE_ZIP)"
-
-preflight: test zip
-	@echo ""
-	@echo "==> Pre-flight complete for v$(VERSION)"
-	@echo "    Asset:   $(RELEASE_ZIP)"
-	@echo "    Next:    bash Scripts/distribute-developer-id.sh"
 
 print-version:
 	@echo $(VERSION)

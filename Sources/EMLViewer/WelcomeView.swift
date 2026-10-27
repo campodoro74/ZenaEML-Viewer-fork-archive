@@ -152,7 +152,7 @@ struct WelcomeView: View {
                 )
             }
 
-            Text("ZenaConsult · based on EMLViewer (MIT)")
+            Text("ZenaConsult")
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
         }

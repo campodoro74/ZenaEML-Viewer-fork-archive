@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Build outside iCloud-synced trees: extended attributes from CloudDocs break codesign.
+# Prefer a non-cloud derived-data path: some synced folders add xattrs that break codesign.
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -35,21 +35,22 @@ if [ ! -d "$APP_NAME.xcodeproj" ]; then
     echo "error: $APP_NAME.xcodeproj missing" >&2; exit 1
 fi
 
-TEAM_ID="${DEVELOPMENT_TEAM:-P675R8Z5DF}"
-IDENTITY_DEV_ID="${CODESIGN_IDENTITY:-Developer ID Application: Martijn Goudkamp (P675R8Z5DF)}"
+# Override with DEVELOPMENT_TEAM / CODESIGN_IDENTITY when signing for distribution.
+TEAM_ID="${DEVELOPMENT_TEAM:-}"
+IDENTITY_DEV_ID="${CODESIGN_IDENTITY:-Developer ID Application}"
 
 echo "==> xcodebuild ($CONFIG) derivedData=$DERIVED"
 EXTRA_SIGN=()
 if [ "$SIGN_MODE" = "adhoc" ] || [ "$CONFIG" = "Debug" -a "$SIGN_MODE" = "auto" ]; then
     EXTRA_SIGN=(
         CODE_SIGN_STYLE=Automatic
-        DEVELOPMENT_TEAM="$TEAM_ID"
+        ${TEAM_ID:+DEVELOPMENT_TEAM="$TEAM_ID"}
     )
 elif [ "$SIGN_MODE" = "developer-id" ] || [ "$CONFIG" = "Release" -a "$SIGN_MODE" = "auto" ]; then
     EXTRA_SIGN=(
         CODE_SIGN_STYLE=Manual
         CODE_SIGN_IDENTITY="$IDENTITY_DEV_ID"
-        DEVELOPMENT_TEAM="$TEAM_ID"
+        ${TEAM_ID:+DEVELOPMENT_TEAM="$TEAM_ID"}
         PROVISIONING_PROFILE_SPECIFIER=
     )
 fi
@@ -69,7 +70,6 @@ if [ ! -d "$BUILT_APP" ]; then
 fi
 
 echo "==> Copying to $APP_BUNDLE"
-# Keep signed artifacts off iCloud-synced trees (CloudDocs xattrs break codesign).
 if [[ "$DIST_DIR" == /* ]]; then
     ABS_DIST="$DIST_DIR"
 else
@@ -104,7 +104,6 @@ elif [ "$CONFIG" = "Release" ] || [ "$SIGN_MODE" = "developer-id" ]; then
     codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
 fi
 
-# Symlink into project dist/ for convenience (symlink target stays in /tmp)
 ln -sfn "$APP_BUNDLE" "$PROJECT_ROOT/dist/$APP_NAME.app"
 
 echo "==> Registering with LaunchServices"
